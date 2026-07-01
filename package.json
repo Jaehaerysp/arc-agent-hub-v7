@@ -19,13 +19,13 @@
     "reputation",
     "onchain-identity"
   ],
-  "homepage": "https://github.com/arc-agent-hub/arc-agent-hub#readme",
+  "homepage": "https://github.com/Jaehaerysp/arc-agent-hub-v3#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/arc-agent-hub/arc-agent-hub.git"
+    "url": "git+https://github.com/Jaehaerysp/arc-agent-hub-v3.git"
   },
   "bugs": {
-    "url": "https://github.com/arc-agent-hub/arc-agent-hub/issues"
+    "url": "https://github.com/Jaehaerysp/arc-agent-hub-v3/issues"
   },
   "author": "Arc Agent Hub contributors",
   "license": "MIT",

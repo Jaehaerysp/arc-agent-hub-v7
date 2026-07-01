@@ -5,7 +5,7 @@ Thanks for your interest in improving Arc Agent Hub.
 ## Development setup
 
 ```bash
-git clone https://github.com/arc-agent-hub/arc-agent-hub.git
+git clone https://github.com/Jaehaerysp/arc-agent-hub-v3.git
 cd arc-agent-hub
 npm install
 npm run dev
