@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { listJobsForAccount } from '../lib/blockchain/jobs'
+import { usePolling } from './usePolling'
 
 const POLL_INTERVAL_MS = 20000
 
@@ -38,12 +39,7 @@ export function useJobs(provider, account) {
     }
   }, [provider, account])
 
-  useEffect(() => {
-    refresh()
-    if (!provider || !account) return
-    const interval = setInterval(refresh, POLL_INTERVAL_MS)
-    return () => clearInterval(interval)
-  }, [refresh, provider, account])
+  usePolling(refresh, POLL_INTERVAL_MS, Boolean(provider && account))
 
   return { jobs, loading, error, refresh }
 }

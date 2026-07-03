@@ -4,6 +4,11 @@ const ToastContext = createContext(null)
 
 let idCounter = 0
 
+/**
+ * Provides app-wide toast notifications. Wrap once near the root (see
+ * `App.jsx`); descendants call `useToast()` to trigger or dismiss a toast.
+ * Toasts auto-dismiss after `duration` ms unless `duration` is 0.
+ */
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([])
 
@@ -30,6 +35,10 @@ export function ToastProvider({ children }) {
   )
 }
 
+/**
+ * Reads the toast context. Throws if called outside a `ToastProvider` so
+ * misuse fails loudly during development rather than silently no-op-ing.
+ */
 export function useToast() {
   const ctx = useContext(ToastContext)
   if (!ctx) {

@@ -106,7 +106,9 @@
   width: 3px;
   border-radius: var(--radius-full);
   background: var(--gradient-brand);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
+.nav-item.active { box-shadow: var(--inset-hairline); }
 .nav-icon {
   width: 18px;
   height: 18px;

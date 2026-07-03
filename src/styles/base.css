@@ -23,7 +23,22 @@ body {
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  line-height: 1.25;
+}
+h1 { font-size: var(--text-xl); }
+h2 { font-size: var(--text-lg); }
+h3 { font-size: var(--text-md); }
+h4 { font-size: var(--text-base); }
+
+/* Numeric readouts — balances, counts, hashes — align on tabular figures */
+.mono, .stat-value, .jobs-table, .agent-card-stats {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--accent-glow);
   color: var(--text-primary);
 }
 

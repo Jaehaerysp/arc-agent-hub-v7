@@ -1,4 +1,4 @@
-export function FieldGroup({ label, hint, badge, children }) {
+export function FieldGroup({ label, hint, error, badge, children }) {
   return (
     <div className="field-group">
       {label && (
@@ -8,22 +8,26 @@ export function FieldGroup({ label, hint, badge, children }) {
         </label>
       )}
       {children}
-      {hint && <span className="field-hint">{hint}</span>}
+      {error ? (
+        <span className="field-hint is-error">{error}</span>
+      ) : (
+        hint && <span className="field-hint">{hint}</span>
+      )}
     </div>
   )
 }
 
-export function Input(props) {
-  return <input className="input" {...props} />
+export function Input({ error = false, className = '', ...props }) {
+  return <input className={['input', error ? 'is-error' : '', className].filter(Boolean).join(' ')} {...props} />
 }
 
-export function Textarea(props) {
-  return <textarea className="textarea" {...props} />
+export function Textarea({ error = false, className = '', ...props }) {
+  return <textarea className={['textarea', error ? 'is-error' : '', className].filter(Boolean).join(' ')} {...props} />
 }
 
-export function Select({ children, ...props }) {
+export function Select({ error = false, className = '', children, ...props }) {
   return (
-    <select className="select" {...props}>
+    <select className={['select', error ? 'is-error' : '', className].filter(Boolean).join(' ')} {...props}>
       {children}
     </select>
   )

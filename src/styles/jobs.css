@@ -19,18 +19,22 @@
 
 .jobs-table thead th {
   text-align: left;
-  padding: 10px 14px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  padding: 11px 14px;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--text-muted);
-  background: var(--bg-glass);
+  background: var(--bg-glass-strong);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .jobs-table tbody td {
-  padding: 12px 14px;
+  padding: 13px 14px;
   border-bottom: 1px solid var(--border);
   color: var(--text-secondary);
 }
@@ -38,7 +42,7 @@
 .jobs-table tbody tr:last-child td { border-bottom: none; }
 
 .jobs-table-row { cursor: pointer; transition: background 0.15s var(--ease); }
-.jobs-table-row:hover { background: var(--bg-glass); }
+.jobs-table-row:hover { background: var(--accent-dim); }
 .jobs-table-row td:first-child { color: var(--text-primary); font-weight: 600; }
 
 .role-pill {

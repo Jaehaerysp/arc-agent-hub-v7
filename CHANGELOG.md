@@ -1,5 +1,43 @@
 # Changelog
 
+## v5.1.0 — Stabilization & Developer Experience
+
+No user-facing behavior changes. This release focuses entirely on documentation accuracy, test coverage, and internal cleanup.
+
+### Added
+- `src/hooks/usePolling.js` — shared `fn`-on-an-interval hook, with unit tests (`usePolling.test.js`).
+- Vitest + React Testing Library test setup (`vite.config.js` `test` block, `src/test/setup.js`), plus `npm test` / `npm run test:watch` scripts.
+- Initial unit tests for pure utility logic: `src/lib/format.test.js`, `src/features/jobs/components/JobStats.test.js` (`computeJobStats`), `src/features/agents/components/AgentStats.test.js` (`computeAgentStats`), `src/data/agents.test.js` (`getAgentByWallet`).
+- `docs/` folder: `OVERVIEW.md`, `ARCHITECTURE.md`, `BLOCKCHAIN.md`, `MARKETPLACE.md`, `DEVELOPMENT.md`, `PROJECT_ROADMAP.md`.
+- JSDoc for `useCopyToClipboard`, `ToastProvider`, and `useToast`, which previously had none.
+
+### Changed
+- `useBalances.js` and `useJobs.js` refactored to call the new `usePolling()` hook instead of each hand-rolling an identical `useEffect`/`setInterval` block. Verified behavior-identical: same poll intervals (15s / 20s), same immediate-call-on-mount, same skip/cleanup conditions. No change to `useJob.js`, `useContractWrite.js`, `useWallet.js`, `WalletProvider`, `src/contracts/*`, or `src/lib/blockchain/*`.
+- `README.md`, `ARCHITECTURE.md`, `CONTRIBUTING.md` rewritten to accurately describe the current v5.1 feature set (Marketplace, Agent Profile, Hire Agent flow — previously undocumented), folder structure, and development workflow.
+- `package.json` version bumped from the stale `4.0.0-sprint2` to `5.1.0` to match the actually-shipped feature set.
+
+### Preserved (unchanged, verified working)
+- All ERC-8004/ERC-8183 contract addresses, ABI signatures, RPC endpoint, and explorer URL — untouched.
+- `src/contracts/*`, `src/lib/blockchain/*`, `WalletProvider`, `useWallet`, `useJob`, `useContractWrite` — untouched.
+- Every feature page's rendered output and routing — untouched.
+
+## v5.0.0 — Agent Marketplace, Profile & Hire flow
+
+*(Documented retroactively in v5.1.0 — this functionality had already shipped without a changelog entry or version bump; see v5.1.0's "Changed" notes above.)*
+
+### Added
+- `AgentsPage` "Marketplace" tab: searchable, category-filterable grid of agents (`AgentGrid`/`AgentCard`) with a stats row (`AgentStats` / `computeAgentStats()`).
+- `AgentProfilePage` (route `/agents/:wallet`) + `AgentProfileCard` — full per-agent profile with a "Hire this agent" action.
+- Hire Agent flow: both `AgentCard` and `AgentProfileCard` navigate to `/jobs/create` with the agent pre-filled as the job provider via router state.
+- `src/data/agents.js` — curated static agent catalog (`AGENTS[]`, `getAgentByWallet()`), clearly commented as a temporary stand-in for on-chain discovery (see Known Limitation below).
+- `src/styles/agents.css`.
+
+### Changed
+- The original `AgentsPage` body (ERC-8004 `register()` form) moved, unchanged, into `RegisterAgentPanel.jsx` under a new "Register Agent" tab, so registration keeps working exactly as before alongside the new Marketplace default view.
+
+### Known Limitation
+- The ERC-8004 Identity Registry ABI has no `totalSupply()`/`tokenURI()`/`ownerOf()`/`tokenByIndex()`, so the Marketplace cannot yet enumerate on-chain identities. `data/agents.js` is an intentional stand-in until a registry upgrade or an indexer/subgraph makes real discovery possible.
+
 ## v4.0.0-sprint3 (unreleased)
 
 UI/UX and dashboard polish on top of Sprint 2.1's stable job lifecycle — no protocol, contract, or write-function changes.

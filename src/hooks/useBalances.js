@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ethers } from 'ethers'
 import { CONTRACTS } from '../contracts/registry'
+import { usePolling } from './usePolling'
 
 const POLL_INTERVAL_MS = 15000
 
@@ -40,12 +41,7 @@ export function useBalances(provider, account) {
     }
   }, [provider, account])
 
-  useEffect(() => {
-    refresh()
-    if (!provider || !account) return
-    const interval = setInterval(refresh, POLL_INTERVAL_MS)
-    return () => clearInterval(interval)
-  }, [refresh, provider, account])
+  usePolling(refresh, POLL_INTERVAL_MS, Boolean(provider && account))
 
   return { nativeBalance, anvBalance, loading, refresh }
 }

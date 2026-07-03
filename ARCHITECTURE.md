@@ -16,7 +16,15 @@ src/
   features/               One folder per user-facing feature
     landing/               Public marketing page, mounted at "/" (no wallet gate)
     dashboard/
-    agents/
+    agents/                 Marketplace + Agent Profile + ERC-8004 registration (two tabs, one route family)
+      AgentsPage.jsx          Tabs: "Marketplace" (browse/search/filter + hire) and "Register Agent"
+      AgentProfilePage.jsx    Route /agents/:wallet — resolves a wallet to a catalog entry via getAgentByWallet()
+      components/
+        AgentStats.jsx        computeAgentStats() + marketplace-wide stats row (agents / categories / avg reputation / jobs completed)
+        AgentGrid.jsx         Responsive grid of AgentCard tiles + shared empty state
+        AgentCard.jsx         Marketplace tile — click to view profile, "Hire" button routes straight to /jobs/create
+        AgentProfileCard.jsx  Full profile view + "Hire this agent" panel, used by AgentProfilePage
+        RegisterAgentPanel.jsx  The pre-Marketplace agents body (ERC-8004 register() call), unchanged, now under the "Register Agent" tab
     reputation/
     validation/
     transfer/
@@ -38,8 +46,13 @@ src/
         JobsFilters.jsx     Reusable status-filter pills + sort dropdown, shared by Job History
     Each feature exports a single <FeatureName>Page.jsx, lazy-loaded by the router.
 
+  data/
+    agents.js               Curated, static Marketplace catalog (AGENTS[] + getAgentByWallet()) — see
+                             "Why the Marketplace uses static data" below
+
   contracts/
-    registry.js            Every contract address + ABI + display label — single source of truth
+    registry.js            Every contract address + ABI + display label for ERC-8004 (Identity,
+                            Reputation, Validation) + the ANV token — single source of truth for those four
     abis/                  One ABI file per contract
 
   chains/
@@ -47,11 +60,13 @@ src/
 
   hooks/
     useWallet.js            Wallet connection, network state, activity log, agent id
-    useBalances.js          Polls native + ANV balances
+    usePolling.js            fn-on-an-interval, extracted from the identical shape useBalances and
+                             useJobs each used to hand-roll — see "Polling" below (v5.1)
+    useBalances.js          Polls native + ANV balances (now via usePolling; same behavior)
     useContractWrite.js      Shared write-transaction lifecycle (loading/error/success/activity)
     useAsyncAction.js        Same lifecycle shape as useContractWrite, generalized to wrap any
                              async function — used by jobs.js calls that do more than one thing
-    useJobs.js               Polls the list of jobs (client or provider) for the connected account
+    useJobs.js               Polls the list of jobs for the connected account (now via usePolling; same behavior)
     useJob.js                Loads a single job + the connected account's USDC allowance
     useLocalStorage.js       Generic localStorage-backed state
     useCopyToClipboard.js
@@ -71,7 +86,13 @@ src/
     components.css           Design-system component styles
     features.css              Feature-specific styles (dashboard grid, activity list, settings rows…)
     jobs.css                  Jobs module styles (table, timeline, filter bar, pagination) — same tokens, no new palette
+    agents.css                Marketplace/profile styles (grid, cards, stats row) — same tokens, no new palette
+
+  test/
+    setup.js                Vitest setup — extends `expect` with jest-dom matchers (v5.1)
 ```
+
+Test files are colocated with the code they cover (`format.test.js` next to `format.js`, `JobStats.test.js` next to `JobStats.jsx`) rather than mirrored into `src/test/`, so a file and its test move together. `src/test/` holds only cross-cutting test config.
 
 ## Data flow
 
@@ -84,7 +105,7 @@ src/
 
 Feature pages are registered once in `app/nav.js` and consumed both by the sidebar and the router in `app/App.jsx`, so adding a feature means adding one entry, not editing multiple files.
 
-`App.jsx` splits routing into two zones: `/` renders `features/landing/LandingPage.jsx` directly, with no wallet requirement. Every other route (`/dashboard`, `/agents`, `/reputation`, `/validation`, `/transfer`, `/settings`, `/developer-tools`) is nested under `AppLayout`, which renders the sidebar/header chrome and gates the page body behind a connected wallet. Unknown paths redirect to `/dashboard`.
+`App.jsx` splits routing into two zones: `/` renders `features/landing/LandingPage.jsx` directly, with no wallet requirement. Every other route (`/dashboard`, `/agents`, `/agents/:wallet`, `/reputation`, `/validation`, `/transfer`, `/jobs`, `/jobs/create`, `/jobs/history`, `/jobs/:id`, `/settings`, `/developer-tools`) is nested under `AppLayout`, which renders the sidebar/header chrome and gates the page body behind a connected wallet. Unknown paths redirect to `/dashboard`.
 
 Each page is `React.lazy`-loaded, so the initial bundle only includes the Dashboard; other routes are fetched on first visit (see the per-route chunks in `npm run build` output).
 
@@ -130,3 +151,52 @@ Contract addresses, ABI signatures, and call arguments are otherwise carried ove
 **Create Job.** The form's "Budget (USDC)" field isn't a `createJob()` parameter on-chain — budget is set in a separate `setBudget()` call. `CreateJobPage` chains the two verified calls (`createJob()` then, if a budget was entered, `setBudget()`) so entering a budget at creation "just works," while still only ever calling the verified SDK functions. If the second call fails, the job still exists and a toast points the user to the job page, where `JobActionPanel` will correctly offer *Set Budget* again.
 
 **Error handling.** Wallet-not-connected and wrong-network are already handled globally (`AppLayout`'s `ConnectPrompt` / "Switch to Arc" banner). Within the Jobs pages: `useJob`/`useJobs` surface RPC/read failures as an `Alert` with a `Refresh` retry; `useAsyncAction` (same error-extraction convention as `useContractWrite`: `e.reason || e.shortMessage || e.message`) surfaces user-rejected transactions and contract reverts inline on the action button; every successful write links to its ArcScan transaction.
+
+## Agent Marketplace, Profile & Hire flow (v5.0)
+
+`AgentsPage` now renders two tabs: **Marketplace** (the default) and **Register Agent** (the original ERC-8004 registration body, moved into `RegisterAgentPanel.jsx` unchanged). The Marketplace tab adds:
+
+- `AgentStats` — `computeAgentStats()` (pure) + a 4-card stats row (agents listed, categories, average reputation, jobs completed).
+- Search + category filter (local `useState`, filtered client-side with `useMemo`) over the static `AGENTS` catalog.
+- `AgentGrid` / `AgentCard` — the browsable grid; clicking a card navigates to `/agents/:wallet`, and each card's "Hire" button navigates straight to `/jobs/create` with `{ provider, agentName }` pre-filled via router state.
+- `AgentProfilePage` (route `/agents/:wallet`) resolves the wallet param to a catalog entry with `getAgentByWallet()` and renders `AgentProfileCard` — full stats, a placeholder "recent activity" panel, and a "Hire this agent" panel that does the same `/jobs/create` hand-off as the card.
+
+**Why the Marketplace uses static data.** The deployed ERC-8004 Identity Registry ABI only exposes `register(string)` and a `Transfer` event — there's no `totalSupply()`, `tokenURI()`, `ownerOf()`, or `tokenByIndex()` to enumerate registered identities on-chain. `src/data/agents.js` is therefore an intentional, clearly-commented curated catalog (`AGENTS[]` + `getAgentByWallet()`), not a stand-in that was forgotten. It gives the Marketplace/Profile/Hire UX a real, working data source today. When on-chain enumeration becomes possible (either a registry upgrade or an indexer/subgraph — see `docs/PROJECT_ROADMAP.md`), the plan is a drop-in `useAgents()` hook with the same loading/error/data/refresh shape as `useBalances`/`useJobs`, so `AgentGrid`, `AgentCard`, and `AgentProfileCard` need no changes — only the data source behind them does.
+
+## A note on contract-access patterns
+
+Two conventions currently coexist for talking to contracts, and this is a deliberate, documented state rather than an oversight:
+
+- **`src/contracts/registry.js` + `src/contracts/abis/`** — used by Identity, Reputation, Validation, and the ANV token. This is the pattern described above under "Why a contract registry."
+- **`src/lib/blockchain/`** — used exclusively by the ERC-8183 Jobs feature, carried over from the verified ERC-8183 SDK (see "ERC-8183 Agentic Commerce (Sprint 1)" above) to keep its addresses/ABIs/call signatures traceable back to that SDK.
+
+Both patterns are production-stable and neither is being merged into the other in v5.1 — the ERC-8183 integration is treated as verified, working code that should not be touched for the sake of stylistic consistency alone. A future sprint may revisit unifying them (see `docs/PROJECT_ROADMAP.md`), but that is a deliberate, scoped decision for later, not debt introduced by accident.
+
+## Polling (v5.1)
+
+`useBalances` and `useJobs` previously each implemented the same shape independently:
+
+```js
+useEffect(() => {
+  refresh()
+  if (!provider || !account) return
+  const interval = setInterval(refresh, POLL_INTERVAL_MS)
+  return () => clearInterval(interval)
+}, [refresh, provider, account])
+```
+
+This is now `src/hooks/usePolling.js` — `usePolling(fn, intervalMs, enabled)` — calling `fn` immediately and then on every tick while `enabled` is true. Both hooks call it as `usePolling(refresh, POLL_INTERVAL_MS, Boolean(provider && account))`, which reproduces the exact previous behavior (verified: `refresh()` still runs on every `provider`/`account` change via `refresh`'s own `useCallback` dependency array, and the interval is still skipped/cleared under the same conditions). No polling interval, no blockchain read/write logic, and no component-visible behavior changed — this was a pure internal refactor. `useJob.js` (the single-job hook) was intentionally left as-is in this pass.
+
+## Testing (v5.1)
+
+Vitest + React Testing Library are configured via the `test` block in `vite.config.js` (one config file, no separate toolchain) with `src/test/setup.js` loading jest-dom matchers. `npm test` runs the suite once; `npm run test:watch` runs it in watch mode.
+
+Initial coverage targets pure, side-effect-free logic only — no contract calls, no wallet interaction:
+
+- `src/lib/format.test.js` — every `format.js` export.
+- `src/features/jobs/components/JobStats.test.js` — `computeJobStats()`.
+- `src/features/agents/components/AgentStats.test.js` — `computeAgentStats()`.
+- `src/data/agents.test.js` — `getAgentByWallet()`.
+- `src/hooks/usePolling.test.js` — the new hook, using fake timers.
+
+Testing `useContractWrite`, `useJobs`/`useJob`, or any `lib/blockchain`/`contracts` code is explicitly out of scope for this pass (would require mocking `ethers.Contract`/`BrowserProvider`) and is called out as follow-up work in `docs/PROJECT_ROADMAP.md`.

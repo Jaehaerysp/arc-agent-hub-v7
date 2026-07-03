@@ -6,7 +6,7 @@
 
 ### A Production-Ready Open-Source Dashboard for ERC-8004 AI Agents on Arc Testnet
 
-Build, manage, validate, and monitor AI Agent identities with a modern Web3 dashboard built using **React**, **Vite**, **ethers.js**, and **Arc Testnet**. Now integrating **ERC-8183 Agentic Commerce** alongside ERC-8004 Identity.
+**v5.1.0** — Build, manage, validate, and monitor AI Agent identities with a modern Web3 dashboard built using **React**, **Vite**, **ethers.js**, and **Arc Testnet**. Integrates **ERC-8183 Agentic Commerce** job lifecycle alongside ERC-8004 Identity, plus an Agent Marketplace for browsing, viewing profiles of, and hiring agents directly into a new job.
 
 <p align="center">
 
@@ -36,6 +36,7 @@ Build, manage, validate, and monitor AI Agent identities with a modern Web3 dash
 - **GitHub:** https://github.com/Jaehaerysp/arc-agent-hub-v3
 - **Architecture:** ./ARCHITECTURE.md
 - **Changelog:** ./CHANGELOG.md
+- **Full documentation:** ./docs/OVERVIEW.md
 
 ---
 
@@ -66,6 +67,9 @@ Whether you're building AI Agents, experimenting with ERC-8004, or learning Arc 
 | Feature | Description |
 |----------|-------------|
 | 🤖 AI Agent Identity | Register ERC-8004 AI Agents on-chain |
+| 🛒 Agent Marketplace | Browse, search, and filter a catalog of AI agents by category |
+| 👤 Agent Profile | Per-agent profile page (`/agents/:wallet`) with reputation, stats, and activity |
+| 🤝 Hire Agent | One click from a Marketplace card or profile pre-fills a new ERC-8183 job with that agent as the provider |
 | ⭐ Reputation | Submit and manage reputation feedback |
 | 🛡 Validation | Request validator reviews and monitor status |
 | 💸 ANV Wallet | Send ANV tokens with live balances |
@@ -75,6 +79,8 @@ Whether you're building AI Agents, experimenting with ERC-8004, or learning Arc 
 | 🎨 Design System | Reusable components with glassmorphism styling |
 | 📱 Responsive | Desktop, Tablet and Mobile support |
 | 💼 Jobs (ERC-8183) | Agentic Commerce job lifecycle — dashboard, create, history, and per-job detail with the full create → budget → approve → fund → submit → complete flow |
+
+> **Note:** the Marketplace is currently backed by a curated, static agent catalog (`src/data/agents.js`), not live on-chain discovery — see [Known Limitations](#-known-limitations) below.
 
 ---
 
@@ -90,6 +96,10 @@ flowchart LR
     App --> Dashboard
 
     Dashboard --> Identity
+
+    Dashboard --> Agents["Agents (Marketplace, Profile, Register)"]
+
+    Agents --> Hire["Hire Agent → prefills Create Job"]
 
     Dashboard --> Reputation
 
@@ -142,8 +152,10 @@ For complete architecture details, see:
 - ethers.js v6
 - Arc Testnet
 - ERC-8004
+- ERC-8183
 - JavaScript
 - CSS
+- Vitest + React Testing Library
 - GitHub Actions
 - Vercel
 
@@ -194,6 +206,12 @@ Lint
 npm run lint
 ```
 
+Test
+
+```bash
+npm test
+```
+
 ---
 
 # ⚙ Configuration
@@ -203,6 +221,7 @@ npm run lint
 | Chain Configuration | src/chains/arc.js |
 | Contract Registry (ERC-8004) | src/contracts/registry.js |
 | Contract Registry (ERC-8183) | src/lib/blockchain/ |
+| Agent Catalog (Marketplace) | src/data/agents.js |
 | Design Tokens | src/styles/tokens.css |
 | Navigation | src/app/nav.js |
 
@@ -225,6 +244,14 @@ No environment variables are required.
 |----------|---------|
 | Agentic Commerce | `0x0747EEf0706327138c69792bF28Cd525089e4583` |
 | USDC | `0x3600000000000000000000000000000000000000` |
+
+---
+
+# ⚠ Known Limitations
+
+The deployed ERC-8004 Identity Registry ABI only exposes `register(string)` and a `Transfer` event — there is no `totalSupply()`, `tokenURI()`, `ownerOf()`, or `tokenByIndex()`. Without one of those, the app has no on-chain way to enumerate every registered identity.
+
+Because of this, the Agent Marketplace (`src/data/agents.js`) is **intentionally** a curated, static catalog rather than a live query against the registry. Everything else about the Marketplace — search, filtering, stats, profile pages, and the hire-into-a-job flow — is fully functional; only the underlying agent list isn't yet sourced from the chain. See `docs/MARKETPLACE.md` and `docs/PROJECT_ROADMAP.md` for the planned path to real on-chain (or indexer-backed) discovery.
 
 ---
 
@@ -275,10 +302,14 @@ dist
 - ✅ ERC-8183 Agentic Commerce — services, routes & navigation (Sprint 1)
 - ✅ ERC-8183 Agentic Commerce — job lifecycle UI (Sprint 2)
 - ✅ Job Management dashboard — stats, search, filters, sorting & activity feed (Sprint 3)
-- 🔄 Agent Discovery
+- ✅ Agent Marketplace, Agent Profile pages & Hire Agent flow (v5.0)
+- ✅ Documentation overhaul, `usePolling` extraction & Vitest test suite (v5.1 — this release)
+- 🔄 On-chain (or indexer-backed) Agent Discovery, replacing the static catalog
 - 🔄 Analytics Dashboard
 - 🔄 Multi-chain Support
 - 🔄 WalletConnect Support
+
+See `docs/PROJECT_ROADMAP.md` for the detailed sprint-by-sprint plan.
 
 ---
 
