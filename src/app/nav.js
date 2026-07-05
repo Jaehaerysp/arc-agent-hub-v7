@@ -1,12 +1,11 @@
-import { IconDashboard, IconAgent, IconStar, IconShield, IconTransfer, IconSettings, IconTools, IconJob } from '../ui/icons'
+import { IconDashboard, IconAgent, IconShield, IconTransfer, IconSettings, IconTools, IconJob } from '../ui/icons'
 
 // Flat list — preserved for anything that just needs "all nav items"
 // (breadcrumbs, command palette, active-route lookups).
 export const NAV_ITEMS = [
   { path: '/dashboard', label: 'Dashboard', icon: IconDashboard },
   { path: '/agents', label: 'Agents', icon: IconAgent, badgeKey: 'agentId' },
-  { path: '/reputation', label: 'Reputation', icon: IconStar },
-  { path: '/validation', label: 'Validation', icon: IconShield },
+  { path: '/trust', label: 'Trust Center', icon: IconShield },
   { path: '/transfer', label: 'Transfer', icon: IconTransfer },
   { path: '/jobs', label: 'Jobs', icon: IconJob },
   { path: '/settings', label: 'Settings', icon: IconSettings },
@@ -26,10 +25,7 @@ export const NAV_SECTIONS = [
   },
   {
     label: 'Trust',
-    items: [
-      { path: '/reputation', label: 'Reputation', icon: IconStar },
-      { path: '/validation', label: 'Validation', icon: IconShield },
-    ],
+    items: [{ path: '/trust', label: 'Trust Center', icon: IconShield }],
   },
   {
     label: 'Treasury',
