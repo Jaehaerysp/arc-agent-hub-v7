@@ -78,3 +78,24 @@ export const IconBell = (p) => (
 export const IconUser = (p) => (
   <svg {...base} {...p}><circle cx="12" cy="8" r="3.5" /><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" /></svg>
 )
+export const IconClock = (p) => (
+  <svg {...base} {...p}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg>
+)
+export const IconMessage = (p) => (
+  <svg {...base} {...p}><path d="M4 5h16v11H8l-4 4V5z" /></svg>
+)
+export const IconBookmark = (p) => (
+  <svg {...base} {...p}><path d="M6 3h12v18l-6-4-6 4V3z" /></svg>
+)
+export const IconShare = (p) => (
+  <svg {...base} {...p}><circle cx="18" cy="5" r="2.5" /><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="19" r="2.5" /><path d="M8.3 10.7l7.4-4.2M8.3 13.3l7.4 4.2" /></svg>
+)
+export const IconLink = (p) => (
+  <svg {...base} {...p}><path d="M9 15l6-6" /><path d="M11 6l1-1a4 4 0 015.7 5.7l-1 1" /><path d="M13 18l-1 1a4 4 0 01-5.7-5.7l1-1" /></svg>
+)
+export const IconBriefcase = (p) => (
+  <svg {...base} {...p}><rect x="3" y="7" width="18" height="12" rx="2" /><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2" /></svg>
+)
+export const IconTag = (p) => (
+  <svg {...base} {...p}><path d="M3 11.5V5a2 2 0 012-2h6.5L21 11.5 12.5 20 3 11.5z" /><circle cx="8" cy="8" r="1.4" fill="currentColor" /></svg>
+)
