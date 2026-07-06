@@ -20,7 +20,7 @@ import {
   IconActivity,
 } from '../../ui/icons'
 
-export const REPO_URL = 'https://github.com/Jaehaerysp/arc-agent-hub-v3'
+export const REPO_URL = 'https://github.com/Jaehaerysp/arc-agent-hub-v7'
 export const DOCS_URL = 'https://docs.arc.network'
 
 export const NAV_LINKS = [

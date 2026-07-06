@@ -9,7 +9,7 @@
 ## Setup
 
 ```bash
-git clone https://github.com/Jaehaerysp/arc-agent-hub-v3.git
+git clone https://github.com/Jaehaerysp/arc-agent-hub-v7.git
 cd arc-agent-hub
 npm install
 ```

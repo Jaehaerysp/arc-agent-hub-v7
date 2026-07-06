@@ -11,9 +11,9 @@
 
 <p align="center">
 
-[![Build](https://github.com/Jaehaerysp/arc-agent-hub-v3/actions/workflows/build.yml/badge.svg)](https://github.com/Jaehaerysp/arc-agent-hub-v3/actions/workflows/build.yml)
-[![Lint](https://github.com/Jaehaerysp/arc-agent-hub-v3/actions/workflows/lint.yml/badge.svg)](https://github.com/Jaehaerysp/arc-agent-hub-v3/actions/workflows/lint.yml)
-[![Tests](https://github.com/Jaehaerysp/arc-agent-hub-v3/actions/workflows/test.yml/badge.svg)](https://github.com/Jaehaerysp/arc-agent-hub-v3/actions/workflows/test.yml)
+[![Build](https://github.com/Jaehaerysp/arc-agent-hub-v7/actions/workflows/build.yml/badge.svg)](https://github.com/Jaehaerysp/arc-agent-hub-v7/actions/workflows/build.yml)
+[![Lint](https://github.com/Jaehaerysp/arc-agent-hub-v7/actions/workflows/lint.yml/badge.svg)](https://github.com/Jaehaerysp/arc-agent-hub-v7/actions/workflows/lint.yml)
+[![Tests](https://github.com/Jaehaerysp/arc-agent-hub-v7/actions/workflows/test.yml/badge.svg)](https://github.com/Jaehaerysp/arc-agent-hub-v7/actions/workflows/test.yml)
 [![Version](https://img.shields.io/badge/version-7.0.0-7c3aed?style=flat-square)](./CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev)
@@ -114,8 +114,8 @@ For the full annotated file-by-file layout, see **[ARCHITECTURE.md](./ARCHITECTU
 **Requirements:** Node.js 18+, npm, and MetaMask (or another injected-provider wallet).
 
 ```bash
-git clone https://github.com/Jaehaerysp/arc-agent-hub-v3.git
-cd arc-agent-hub-v3
+git clone https://github.com/Jaehaerysp/arc-agent-hub-v7.git
+cd arc-agent-hub-v7
 npm install
 npm run dev
 ```
