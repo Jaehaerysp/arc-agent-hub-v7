@@ -128,8 +128,9 @@ export async function listJobsForAccount(signerOrProvider, account) {
   const latest = await provider.getBlockNumber()
 
   // Arc RPC allows max 10,000 blocks per request
-  const fromBlock = Math.max(0, latest - 10000)
-
+  const LOOKBACK_BLOCKS = 2000
+  const fromBlock = Math.max(0, latest - LOOKBACK_BLOCKS)
+  
   const [clientLogs, providerLogs] = await Promise.all([
     contract.queryFilter(
       contract.filters.JobCreated(null, account),
