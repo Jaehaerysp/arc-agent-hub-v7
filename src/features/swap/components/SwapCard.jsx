@@ -49,7 +49,7 @@ export function SwapCard({
     <Panel
       icon={<IconSwap width={18} height={18} />}
       title="Swap Form"
-      subtitle="Exchange USDC and EURC on Arc Testnet"
+      subtitle="Exchange USDC, EURC, and cirBTC on Arc Testnet"
       className="wv7-transfer-form-panel"
       actions={
         <Badge variant={isArcNetwork === false ? 'warning' : 'muted'} size="sm" dot={false}>

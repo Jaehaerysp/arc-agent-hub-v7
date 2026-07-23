@@ -9,6 +9,7 @@ import { SwapSettings } from '../components/SwapSettings'
 import { SwapHistory } from '../components/SwapHistory'
 import { SwapStatusDialog } from '../components/SwapStatusDialog'
 import { SWAP_TOKENS, getOppositeSwapToken } from '../services/swapService'
+import { isNonUsdcToken } from '../services/tokenConfig'
 import { computeSwapHistory } from '../services/swapHistoryService'
 import { NETWORK_LABEL } from '../../wallet/walletAnalytics'
 import '../styles/swap.css'
@@ -59,19 +60,32 @@ export default function SwapPage() {
     swap.reset()
   }
 
+  // Every supported pair is <asset> -> USDC (or the reverse) — EURC and
+  // cirBTC swapping directly against each other has never been exercised
+  // against App Kit (see tokenConfig.js). Picking a non-USDC token on one
+  // side now always forces USDC onto the other side, same as it already
+  // forced "the other token" back when there were only two options.
   const handleTokenInChange = (key) => {
     clearState()
     setAmountIn('')
     const next = SWAP_TOKENS.find((t) => t.key === key)
     setTokenIn(next)
-    if (tokenOut && next && tokenOut.key === next.key) setTokenOut(getOppositeSwapToken(next.key))
+    if (next && isNonUsdcToken(next.key) && tokenOut && isNonUsdcToken(tokenOut.key)) {
+      setTokenOut(getOppositeSwapToken(next.key))
+    } else if (tokenOut && next && tokenOut.key === next.key) {
+      setTokenOut(getOppositeSwapToken(next.key))
+    }
   }
 
   const handleTokenOutChange = (key) => {
     clearState()
     const next = SWAP_TOKENS.find((t) => t.key === key)
     setTokenOut(next)
-    if (tokenIn && next && tokenIn.key === next.key) setTokenIn(getOppositeSwapToken(next.key))
+    if (next && isNonUsdcToken(next.key) && tokenIn && isNonUsdcToken(tokenIn.key)) {
+      setTokenIn(getOppositeSwapToken(next.key))
+    } else if (tokenIn && next && tokenIn.key === next.key) {
+      setTokenIn(getOppositeSwapToken(next.key))
+    }
   }
 
   const handleSwitchTokens = () => {
@@ -123,7 +137,7 @@ export default function SwapPage() {
           className="wv7-hero wv7-transfer-hero"
           eyebrow="Universal Token Swap"
           title="Swap Tokens"
-          description={`Exchange USDC and EURC on ${NETWORK_LABEL}`}
+          description={`Exchange USDC, EURC, and cirBTC on ${NETWORK_LABEL}`}
           actions={
             <div className="wv7-hero-facts" role="list">
               <div

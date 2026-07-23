@@ -48,35 +48,20 @@
 // wallet), never through a plain RPC URL — so there is no read-only RPC
 // call here for RpcManager to front. This is intentional, not an
 // oversight; see the RPC migration report for the full read/write split.
-import { AppKit } from '@circle-fin/app-kit'
 import { createViemAdapterFromProvider } from '@circle-fin/adapter-viem-v2'
 import logger from '../../../utils/logger'
-import { USDC_TOKEN } from '../../payments/services/usdcPaymentService'
-import { WALLET_TOKENS } from '../../wallet/services/tokenRegistry'
+import { getAppKit } from './appKit'
+import { SWAP_TOKENS, getSwapToken, getOppositeSwapToken } from './tokenConfig'
 
-// Same single, module-level `AppKit` instance the reference scripts create
-// once (`const kit = new AppKit();`) and reuse across every swap call.
-const kit = new AppKit()
+// Shared App Kit instance (also used by quoteService.js) — see appKit.ts
+// for why this replaced two separate `new AppKit()` calls.
+const kit = getAppKit()
 
-const EURC_TOKEN = WALLET_TOKENS.find((t) => t.key === 'eurc')
-
-/**
- * Every asset the Swap page can offer (USDC + EURC on Arc Testnet only,
- * per the Sprint 4 brief). Same "thin filter over the registries the app
- * already has" pattern as Bridge's `BRIDGE_ASSETS` — not a new token
- * registry, just the two Circle-issued stablecoins both reference scripts
- * actually swap between.
- */
-export const SWAP_TOKENS = [USDC_TOKEN, EURC_TOKEN].filter(Boolean)
-
-export function getSwapToken(key) {
-  return SWAP_TOKENS.find((t) => t.key === key) || SWAP_TOKENS[0]
-}
-
-/** The other supported token — this feature only ever offers a two-token pair, so "the other one" is always unambiguous. */
-export function getOppositeSwapToken(key) {
-  return SWAP_TOKENS.find((t) => t.key !== key) || SWAP_TOKENS[0]
-}
+// SWAP_TOKENS / getSwapToken / getOppositeSwapToken now live in
+// tokenConfig.ts (which also adds cirBTC) — re-exported here so every
+// existing import of these from swapService.js (SwapPage.jsx,
+// useSwap.js, tests) keeps working unchanged.
+export { SWAP_TOKENS, getSwapToken, getOppositeSwapToken }
 
 /** Circle App Kit chain identifier for Arc Testnet, used by every `kit.swap()`/`kit.estimateSwap()` call this feature makes. */
 export const SWAP_CHAIN = 'Arc_Testnet'

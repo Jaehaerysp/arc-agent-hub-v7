@@ -9,15 +9,14 @@
 // every keystroke via `useSwap.js`'s debounce, same as Bridge's
 // `bridgeEstimator.js` is a separate module from `bridgeService.js`.
 
-import { AppKit } from '@circle-fin/app-kit'
 import logger from '../../../utils/logger'
 import { SWAP_CHAIN } from './swapService'
+import { getAppKit } from './appKit'
+import { buildQuoteKey, getCachedQuote, setCachedQuote } from './quoteCache'
+import { withRetry } from './quoteRetry'
 
-// Own module-level `AppKit` instance, same convention as `swapService.js`'s
-// `kit` — estimates are read-only (no signing), so sharing one instance
-// across every debounced quote call is safe and avoids re-constructing the
-// SDK on every keystroke.
-const kit = new AppKit()
+// Shared App Kit instance (also used by swapService.js) — see appKit.ts.
+const kit = getAppKit()
 
 /**
  * Gets a pre-swap estimate for `amountIn` of `tokenIn` -> `tokenOut`.
@@ -47,42 +46,84 @@ const kit = new AppKit()
  *     response (verified against the SDK's type definitions) — surfaced
  *     as `null` rather than approximated, so callers can tell "the SDK
  *     doesn't provide this" apart from "this failed to load."
+ *
+ * Retry + cache (ports ArcVault reverse-engineering guide, Parts 7-8):
+ * the actual `kit.estimateSwap()` call is wrapped in `withRetry` — 3
+ * attempts total, flat 300ms/800ms delays, matching the ArcVault
+ * reference exactly. `shouldContinue` (optional) is forwarded into every
+ * retry attempt so a caller with its own request-id race guard (see
+ * useSwap.js) can abort an in-flight retry once a newer request has
+ * superseded it. If every attempt fails, a cached quote for the same
+ * `tokenIn`/`tokenOut`/`amountIn`/`slippageBps` combination is returned
+ * instead of an error when one exists (`stale: true`) — the UI keeps
+ * showing the last-known-good numbers instead of going blank. A
+ * successful call always updates the cache.
  */
-export async function getSwapQuote({ adapter, kitKey, tokenIn, tokenOut, amountIn, slippageBps }) {
+export async function getSwapQuote({ adapter, kitKey, tokenIn, tokenOut, amountIn, slippageBps, shouldContinue }) {
+  const cacheKey = tokenIn && tokenOut ? getSwapQuoteKey(tokenIn, tokenOut, amountIn, slippageBps) : null
+
   try {
     if (!adapter) throw new Error('Connect your wallet to continue')
     if (!kitKey) throw new Error('KIT_KEY missing — set VITE_CIRCLE_KIT_KEY (or VITE_SWAP_KIT_KEY) in your .env')
     if (tokenIn.key === tokenOut.key) throw new Error('Token In and Token Out must be different')
     if (!amountIn || Number(amountIn) <= 0) throw new Error('Invalid amount')
 
-    const estimate = await kit.estimateSwap({
-      from: { adapter, chain: SWAP_CHAIN },
-      tokenIn: tokenIn.symbol,
-      tokenOut: tokenOut.symbol,
-      amountIn,
-      config: { kitKey, ...(slippageBps ? { slippageBps } : {}) },
-    })
+    const estimate = await withRetry(
+      () =>
+        kit.estimateSwap({
+          from: { adapter, chain: SWAP_CHAIN },
+          tokenIn: tokenIn.symbol,
+          tokenOut: tokenOut.symbol,
+          amountIn,
+          config: { kitKey, ...(slippageBps ? { slippageBps } : {}) },
+        }),
+      shouldContinue
+    )
+
+    if (!estimate) {
+      // shouldContinue() returned false mid-retry — a newer request has
+      // already superseded this one; nothing to return, cache untouched.
+      return null
+    }
 
     const fees = estimate.fees ?? []
     const gasFee = fees.find((fee) => fee.type === 'gas') ?? null
+    const minimumReceived = estimate.stopLimit ?? null
+
+    if (cacheKey) setCachedQuote(cacheKey, { estimatedOutput: estimate.estimatedOutput ?? null, minimumReceived, fees })
 
     return {
       estimatedOutput: estimate.estimatedOutput ?? null,
       fees,
-      minimumReceived: estimate.stopLimit ?? null,
+      minimumReceived,
       estimatedGas: gasFee,
       slippage: slippageBps ?? null,
       priceImpact: null, // not provided by kit.estimateSwap()
       route: null, // not provided by kit.estimateSwap()
       error: null,
+      cacheKey,
+      stale: false,
     }
   } catch (e) {
-    logger.error('Quote failed', {
-      tokenIn: tokenIn?.symbol,
-      tokenOut: tokenOut?.symbol,
-      amountIn,
-      message: e?.reason || e?.shortMessage || e?.message || 'Quote unavailable',
-    })
+    const message = e?.reason || e?.shortMessage || e?.message || 'Quote unavailable'
+    logger.error('Quote failed', { tokenIn: tokenIn?.symbol, tokenOut: tokenOut?.symbol, amountIn, message })
+
+    const cached = cacheKey ? getCachedQuote(cacheKey) : null
+    if (cached) {
+      return {
+        estimatedOutput: cached.estimatedOutput,
+        fees: cached.fees,
+        minimumReceived: cached.minimumReceived,
+        estimatedGas: (cached.fees || []).find((fee) => fee.type === 'gas') ?? null,
+        slippage: slippageBps ?? null,
+        priceImpact: null,
+        route: null,
+        error: null,
+        cacheKey,
+        stale: true,
+      }
+    }
+
     return {
       estimatedOutput: null,
       fees: [],
@@ -91,7 +132,14 @@ export async function getSwapQuote({ adapter, kitKey, tokenIn, tokenOut, amountI
       slippage: slippageBps ?? null,
       priceImpact: null,
       route: null,
-      error: e?.reason || e?.shortMessage || e?.message || 'Quote unavailable',
+      error: message,
+      cacheKey,
+      stale: false,
     }
   }
+}
+
+/** Builds the cache key for a given quote request — exposed so useSwap.js can schedule a background retry (quoteRetry.js's `scheduleBackgroundRetry`) against the exact same key this function used internally. */
+export function getSwapQuoteKey(tokenIn, tokenOut, amountIn, slippageBps) {
+  return buildQuoteKey(tokenIn.key, tokenOut.key, amountIn, slippageBps ?? 0)
 }

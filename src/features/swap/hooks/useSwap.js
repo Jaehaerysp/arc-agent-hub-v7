@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { executeSwap, getSwapAdapter, getSwapKitKey } from '../services/swapService'
-import { getSwapQuote } from '../services/quoteService'
+import { getSwapQuote, getSwapQuoteKey } from '../services/quoteService'
+import { scheduleBackgroundRetry, clearBackgroundRetry } from '../services/quoteRetry'
 import { shortAddr } from '../../../lib/format'
 
 const QUOTE_DEBOUNCE_MS = 500
@@ -58,25 +59,41 @@ export function useSwap(account, addActivity) {
     }
 
     const currentRequest = ++quoteRequestId.current
+    const stillCurrent = () => quoteRequestId.current === currentRequest
     setQuoteLoading(true)
 
-    const timer = setTimeout(async () => {
+    const fetchQuote = async () => {
       try {
         const kitKey = getSwapKitKey()
         const adapter = await getSwapAdapter()
-        const result = await getSwapQuote({ adapter, kitKey, tokenIn, tokenOut, amountIn, slippageBps })
-        if (quoteRequestId.current !== currentRequest) return // superseded by a newer request
+        const result = await getSwapQuote({ adapter, kitKey, tokenIn, tokenOut, amountIn, slippageBps, shouldContinue: stillCurrent })
+        if (!stillCurrent() || !result) return // superseded by a newer request
 
         setQuote(result.error ? null : result)
         setQuoteError(result.error)
+
+        // ArcVault-style background retry (guide Part 7, Tier B): a quote
+        // that came back stale (served from cache after a live failure) or
+        // hard-failed with no cache gets one more attempt shortly after,
+        // up to 3 times, in case the transient failure has cleared.
+        const quoteKey = getSwapQuoteKey(tokenIn, tokenOut, amountIn, slippageBps)
+        if (result.stale || result.error) {
+          scheduleBackgroundRetry(quoteKey, () => {
+            if (stillCurrent()) fetchQuote()
+          })
+        } else {
+          clearBackgroundRetry(quoteKey)
+        }
       } catch (e) {
-        if (quoteRequestId.current !== currentRequest) return
+        if (!stillCurrent()) return
         setQuote(null)
         setQuoteError(e?.message || 'Quote unavailable')
       } finally {
-        if (quoteRequestId.current === currentRequest) setQuoteLoading(false)
+        if (stillCurrent()) setQuoteLoading(false)
       }
-    }, QUOTE_DEBOUNCE_MS)
+    }
+
+    const timer = setTimeout(fetchQuote, QUOTE_DEBOUNCE_MS)
 
     return () => clearTimeout(timer)
   }, [isValid, tokenIn, tokenOut, amountIn, slippageBps])
