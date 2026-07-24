@@ -1,5 +1,7 @@
 # Arc Agent Hub — Overview
 
+> Built on Arc Network. ARC_AGENT_HUB is an independent open-source project — see the [Brand Notice](../README.md#-brand-notice) in the root README.
+
 **Version:** 5.1.0
 **Stack:** React 18 + Vite + ethers.js v6 + React Router, plain JavaScript (no TypeScript), Vitest + React Testing Library for tests.
 
@@ -15,6 +17,7 @@ Arc Agent Hub is a web dashboard for the ERC-8004 AI Agent Identity protocol and
 | `MARKETPLACE.md` | Agent Marketplace, Agent Profile, Hire Agent flow, and the on-chain discovery limitation |
 | `DEVELOPMENT.md` | Local setup, scripts, conventions, testing |
 | `PROJECT_ROADMAP.md` | Sprint history and what's planned next |
+| `FAQ.md` | Common questions about network, marketplace data, Trust Center scoring, and contract-access patterns |
 
 The root-level `README.md`, `ARCHITECTURE.md`, `CHANGELOG.md`, and `CONTRIBUTING.md` remain the entry points for GitHub visitors; this `docs/` folder goes deeper on each topic for contributors actively working in the codebase.
 

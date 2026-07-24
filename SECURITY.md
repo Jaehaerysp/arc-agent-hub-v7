@@ -1,5 +1,7 @@
 # Security Policy
 
+> ARC_AGENT_HUB is an independent open-source project built on Arc Network, not an official Arc or Circle product — see the [Brand Notice](./README.md#-brand-notice). Contract-level (Arc/Circle) issues should go to those teams directly; see "Scope" below.
+
 Arc Agent Hub is a client-side, non-custodial dApp: it never holds private
 keys or funds itself, and every transaction is signed by the user's own
 wallet (MetaMask, Rabby, etc.). Still, we take security issues seriously —

@@ -1386,6 +1386,10 @@
 .landing-footer-v2-heading { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 2px; }
 .landing-footer-v2-col a { font-size: 14px; color: var(--text-secondary); text-decoration: none; transition: opacity 0.2s var(--ease); }
 .landing-footer-v2-col a:hover { opacity: 0.7; color: var(--text-primary); }
+.landing-footer-v2-legal { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-subtle, rgba(255,255,255,0.08)); }
+.landing-footer-v2-notice { font-size: 12px; line-height: 1.6; color: var(--text-dim); max-width: 640px; }
+.landing-footer-v2-notice a { color: var(--text-dim); text-decoration: underline; text-underline-offset: 2px; }
+.landing-footer-v2-notice a:hover { color: var(--text-secondary); }
 
 /* --- Copyright bar --- */
 .landing-copyright { padding: 4px 0 40px; }

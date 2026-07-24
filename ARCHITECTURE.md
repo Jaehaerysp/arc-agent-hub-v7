@@ -1,5 +1,46 @@
 # Architecture
 
+> Built on Arc Network. ARC_AGENT_HUB is an independent open-source project — see the [Brand Notice](./README.md#-brand-notice).
+
+## System overview
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  Browser (React + Vite SPA)                                         │
+│                                                                       │
+│   Landing / Dashboard / Agents / Jobs / Trust / Wallet / Transfer    │
+│         │                                                             │
+│         ▼                                                             │
+│   useWalletContext()  ──────────────►  Connected wallet (MetaMask,    │
+│         │                              Rabby, etc. — signs every tx)  │
+│         ▼                                                             │
+│   ┌───────────────────────┐   ┌──────────────────────────────┐        │
+│   │ src/contracts/registry│   │ src/lib/blockchain/ (ERC-8183)│        │
+│   │ ERC-8004 Identity,    │   │ Agentic Commerce + USDC       │        │
+│   │ Reputation, Validation│   │ (jobs.js, contracts.js)       │        │
+│   └──────────┬────────────┘   └───────────────┬───────────────┘        │
+│              │                                │                        │
+│              └───────────────┬────────────────┘                        │
+│                               ▼                                        │
+│                     src/chains/arc.js (chain id, RPC, explorer)        │
+└───────────────────────────────┬─────────────────────────────────────┘
+                                 ▼
+                     Arc Testnet (RPC + Explorer)
+                                 │
+                                 ▼
+                     Deployed contracts (Identity / Reputation /
+                     Validation registries, ANV token, Agentic
+                     Commerce, USDC — see README "Arc Testnet Contracts")
+```
+
+Circle AppKit (Universal Wallet, Universal Payments, Universal Token Swap)
+and Circle CCTP (cross-chain USDC via Iris attestation) are integrated as
+client-side SDK calls alongside the contract layer above — see the README's
+"Circle Developer Platform" section for what each integration is used for
+and why.
+
+## Folder-level detail
+
 Arc Agent Hub uses a **feature-based architecture**: code is grouped by what it does for the user (agents, trust, wallet…) rather than by technical layer.
 
 ```

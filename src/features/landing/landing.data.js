@@ -286,10 +286,18 @@ export const FOOTER_LINKS = {
   platform: [
     { label: 'Dashboard', href: '/dashboard' },
     { label: 'Marketplace', href: '/marketplace' },
-    { label: 'Documentation', href: DOCS_URL, external: true },
+    { label: 'Arc Network Docs', href: DOCS_URL, external: true },
   ],
   community: [
     { label: 'GitHub', href: REPO_URL, external: true },
-    { label: 'Arc Testnet', href: ARC_RPC_URL, external: true },
+    { label: 'Arc Testnet RPC', href: ARC_RPC_URL, external: true },
   ],
 }
+
+// --- Brand Notice (Arc Brand Guidelines compliance) ---
+// ARC_AGENT_HUB is an independent open-source project built on Arc Network.
+// It is not an official Arc or Circle product, and is not affiliated with,
+// endorsed by, sponsored by, or officially associated with Circle or Arc
+// unless explicitly stated. See README.md#-brand-notice for the full notice.
+export const BRAND_NOTICE =
+  'Built on Arc Network. ARC_AGENT_HUB is an independent open-source project, not an official Arc or Circle product.'

@@ -1,34 +1,37 @@
-# 🚀 ARC_AGENT_HUB
+<div align="center">
 
-> **AI Workforce Platform built on Arc Network**
+<img src=".github/assets/logo.png" alt="Arc Agent Hub v8" width="88" />
 
-Build, Deploy, and Manage Autonomous AI Agents using **Circle Developer
-Platform**, **Native USDC**, **ERC-8004 Identity**, **ERC-8183 Agentic
-Commerce**, and **Arc Network**.
+<img src=".github/assets/banner.png" alt="Arc Agent Hub v8" width="100%" />
 
-> **Brand Notice**
->
-> ARC_AGENT_HUB is an independent open-source project built on **Arc
-> Network**.
->
-> Arc is a trademark of Circle.
->
-> This project is not affiliated with, endorsed by, or sponsored by
-> Circle unless explicitly stated.
+# 🚀 Arc Agent Hub v8.0
 
-------------------------------------------------------------------------
+### A Premium AI Agent Operations Dashboard Powered by Circle AppKit, ERC-8004, ERC-8183 & Arc Testnet
 
-## 📚 Table of Contents
+**Version 8.0.0 – Sprint 4 Complete**
 
--   Overview
--   Why ARC_AGENT_HUB?
--   Project Vision
--   Development Journey
--   Platform Features
--   Platform Highlights
--   Project Statistics
+Arc Agent Hub is a production-ready, open-source developer platform demonstrating how to build modern AI-powered Web3 applications on **Arc Testnet** using **Circle AppKit**, **ERC-8004 AI Identity**, **ERC-8183 Agentic Commerce**, **Circle CCTP Bridge**, **Universal Wallet**, **Universal Payments**, and **Universal Token Swap**.
 
-------------------------------------------------------------------------
+<p align="center">
+
+[![Build](https://github.com/Jaehaerysp/arc-agent-hub-v8/actions/workflows/build.yml/badge.svg)](https://github.com/Jaehaerysp/arc-agent-hub-v8/actions/workflows/build.yml)
+[![Lint](https://github.com/Jaehaerysp/arc-agent-hub-v8/actions/workflows/lint.yml/badge.svg)](https://github.com/Jaehaerysp/arc-agent-hub-v8/actions/workflows/lint.yml)
+[![Tests](https://github.com/Jaehaerysp/arc-agent-hub-v8/actions/workflows/test.yml/badge.svg)](https://github.com/Jaehaerysp/arc-agent-hub-v8/actions/workflows/test.yml)
+[![Version](https://img.shields.io/badge/version-8.0.0-7c3aed?style=flat-square)](./CHANGELOG.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite)](https://vitejs.dev)
+[![Circle](https://img.shields.io/badge/Circle-AppKit-1B6FFF)](https://developers.circle.com/)
+[![ethers.js](https://img.shields.io/badge/ethers.js-v6-2535A0)](https://docs.ethers.org)
+[![Arc](https://img.shields.io/badge/Network-Arc%20Testnet-7c3aed)](https://arc.net)
+
+</p>
+
+**📖 [Architecture](./ARCHITECTURE.md) • 📝 [Changelog](./CHANGELOG.md) • 🛣 [Roadmap](./ROADMAP.md) • 🤝 [Contributing](./CONTRIBUTING.md) • 📚 [Documentation](./docs/OVERVIEW.md)**
+
+</div>
+
+---
 
 # 🌟 Overview
 
@@ -648,31 +651,33 @@ See **SECURITY.md** for responsible disclosure instructions.
 
 Additional documentation:
 
--   Architecture
--   Changelog
--   Roadmap
--   API Reference
--   Developer Guides
--   Security Policy
+- 📖 Architecture
+- 📝 Changelog
+- 🛣 Roadmap
+- 📚 Developer Documentation
+- 🔐 Security Policy
+- 🤝 Contribution Guide
 
-------------------------------------------------------------------------
+---
 
 # 🙏 Acknowledgements
 
 Special thanks to:
 
--   Arc Network
--   Circle
--   React
--   Vite
--   ethers.js
--   viem
--   MetaMask
--   Rabby Wallet
--   GitHub
--   Vercel
+- Arc Network
+- Circle
+- React
+- Vite
+- ethers.js
+- viem
+- MetaMask
+- Rabby Wallet
+- GitHub
+- Vercel
 
-------------------------------------------------------------------------
+for building the tools that make modern Web3 development possible.
+
+---
 
 # 📄 License
 

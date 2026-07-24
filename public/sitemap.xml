@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ARC_AGENT_HUB — sitemap.xml
+
+  Only the public landing page is listed. Every other route
+  (/dashboard, /agents, /jobs, /trust, /wallet, etc.) renders the same
+  client-side app shell behind a "connect wallet" prompt and has no
+  distinct server-rendered content to index, so listing them would add
+  noise rather than SEO value.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://arcagenthub.xyz/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

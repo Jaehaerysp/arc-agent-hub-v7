@@ -2,6 +2,9 @@
 
 Thanks for your interest in improving Arc Agent Hub.
 
+> ARC_AGENT_HUB is an independent open-source project built on Arc Network — see the [Brand Notice](./README.md#-brand-notice) before writing docs or marketing copy that mentions Arc or Circle.
+
+
 ## Branch strategy
 
 - `main` is always deployable — every commit on `main` should pass `npm run build`, `npm run lint`, and `npm test`.
@@ -12,7 +15,7 @@ Thanks for your interest in improving Arc Agent Hub.
 
 ```bash
 git clone https://github.com/Jaehaerysp/arc-agent-hub-v8.git
-cd arc-agent-hub
+cd arc-agent-hub-v8
 npm install
 npm run dev
 ```

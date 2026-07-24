@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { IconArrowUpRight } from '../../../ui/icons'
-import { FOOTER_LINKS } from '../landing.data'
+import { FOOTER_LINKS, BRAND_NOTICE, REPO_URL } from '../landing.data'
 
 function FooterLink({ href, label, external }) {
   if (external) {
@@ -32,6 +32,16 @@ export function Footer() {
             ))}
           </div>
         </div>
+      </div>
+
+      <div className="landing-shell-wide landing-footer-v2-legal">
+        <p className="landing-footer-v2-notice">
+          {BRAND_NOTICE}{' '}
+          <a href={`${REPO_URL}#-brand-notice`} target="_blank" rel="noreferrer">
+            Read the full Brand Notice
+          </a>
+          .
+        </p>
       </div>
     </footer>
   )

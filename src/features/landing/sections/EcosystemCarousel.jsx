@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { SectionHeading } from '../../../ui/SectionHeading'
 import { GlassPanel } from '../../../ui/GlassPanel'
 import { IconChevronLeft, IconChevronRight } from '../../../ui/icons'

@@ -1,7 +1,7 @@
 {
-  "name": "Arc Agent Hub v7",
+  "name": "Arc Agent Hub v8",
   "short_name": "Arc Agent Hub",
-  "description": "Arc Agent Hub v7 — AI Workforce Platform built on Arc Testnet.",
+  "description": "ARC_AGENT_HUB — AI Workforce Platform built on Arc Network. Independent, open-source; not an official Arc or Circle product.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#08060f",
